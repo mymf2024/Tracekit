@@ -127,6 +127,20 @@ class Quickstart(unittest.TestCase):
         self.assertEqual(self.hook("SessionEnd", reason="exit"), 0)
         self.last()
 
+    def test_custom_offline_quickstart(self):
+        code = (
+            "from tracekit.sdk.client import Client\n"
+            "with Client().run(agent='quickstart-test') as run:\n"
+            "    d = run.decide('c1', 'lookup_item', '{\"item\": 123}')\n"
+            "    if d['decision'] == 'allow':\n"
+            "        run.complete('c1', result={'ok': True})\n"
+        )
+        path = os.path.join(self.dir, "custom_offline.py")
+        with open(path, "w") as f:
+            f.write(code)
+        self.sh(self.py, path)
+        self.last()
+
 
 if __name__ == "__main__":
     unittest.main()

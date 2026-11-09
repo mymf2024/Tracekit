@@ -87,6 +87,23 @@ with Client().run(agent="my-agent") as run:
 An offline run of all this (a mock model, no API key), with an approval: `python examples/v2/custom/agent.py --scripted`
 from a checkout.
 
+### Minimal self-contained offline script
+
+To test recording and local verification in a single script without external APIs or model keys, run:
+
+```python
+from tracekit.sdk.client import Client
+
+with Client().run(agent="quickstart-synthetic") as run:
+    call_id, tool, args = "c1", "lookup_inventory", '{"sku": "SKU-42"}'
+    d = run.decide(call_id, tool, args)
+    if d["decision"] == "allow":
+        res = {"status": "in_stock", "quantity": 12}
+        run.complete(call_id, result=res)
+```
+
+After exiting the `with` block, run `tracekit last` in your shell to verify the signed record and inspect the bundle.
+
 ## Read the verify report
 
 `tracekit last` and `tracekit verify` print a short result:
